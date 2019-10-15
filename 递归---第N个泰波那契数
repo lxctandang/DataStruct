@@ -1,0 +1,78 @@
+泰波那契序列 Tn 定义如下： 
+
+T0 = 0, T1 = 1, T2 = 1, 且在 n >= 0 的条件下 Tn+3 = Tn + Tn+1 + Tn+2
+
+给你整数 n，请返回第 n 个泰波那契数 Tn 的值。
+
+示例 1：
+
+输入：n = 4
+输出：4
+解释：
+T_3 = 0 + 1 + 1 = 2
+T_4 = 1 + 1 + 2 = 4
+示例 2：
+
+输入：n = 25
+输出：1389537
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/n-th-tribonacci-number
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+解题思路：
+   这是一道考查递归算法的一道题目，其实也可以使用循环的方法去实现。
+ 
+使用递归算法去实现的话：需要注意两个点，
+   其一为递归条件是什么，什么情况下继续递归。
+   其二就是结束条件是什么，什么情况下结束递归。
+   class Solution {
+    public int tribonacci(int n) {
+        if(n==0) return 0;
+		if(n==1) return 1;
+		if(n==2) return 1;
+		return tribonacci(n-1)+tribonacci(n-2)+tribonacci(n-3);
+        }
+    }
+   但是这里会出现超时的情况，之所以出现这样的原因就是，就是因为很多中间结果被重复计算了。
+                                         6
+                  5                      4                    3
+            4     3     2          3     2      1         2   1    0
+          3 2 1 2 1 0            2 1 0                  
+   比如计算tribonacci(6) 会发现其计算了  tribonacci(5)  tribonacci(4) tribonacci(3)
+   然后tribonacci(5)中又重复计算了tribonacci（5)所以效率是非常低的。
+   
+   那么是否可以不必要重复计算呢？当然是可以的，其实可以发现每一个n,经过一次计算之后，这个值不会发生改变了，
+   那么是否可以将这个值保存起来，通过某个数据结构将这些数据保存，在进行递归计算之前，先看看有没有这个值，再确定是否递归呢.
+   
+   记忆化搜索，把搜索过的值保存起来，避免重复计算。
+   class Solution {
+    public int[] numbers = new int[38];
+	
+	public int tribonacci(int n)  {
+		numbers[0] = 0;
+		numbers[1] = 1;
+		numbers[2] = 1;
+		if(numbers[n] != 0 || n == 0) return numbers[n];
+		return numbers[n] = tribonacci(n-1)+tribonacci(n-2)+tribonacci(n-3);
+	}
+}
+                               
+******************************使用循环的方式********************************8
+   class Solution {
+    public int tribonacci(int n) {
+       int f0 = 0;
+		int f1 = 1;
+		int f2 = 1;
+		if(n==0) return f0;
+		if(n==1) return f1;
+		if(n==2) return f2;
+		for(int i=3;i<=n;i++)  {
+			int temp = f0;
+			f0 = f1;
+			f1 = f2;
+			f2 = f1+f0+temp;
+		}
+		return f2;
+      }
+   }
